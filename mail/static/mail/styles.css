@@ -5,3 +5,15 @@ textarea {
 .mail {
     border: solid black 1px;
 }
+
+.read{
+    background-color: lightgray;
+}
+
+.unread{
+    background-color: white;
+}
+
+.mailIndividual{
+    border: 1px solid brown;
+}
