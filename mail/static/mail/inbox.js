@@ -103,7 +103,6 @@ function email_individual(email_id){
   fetch(`/emails/${email_id}`)
   .then(response => response.json())
   .then(email => {
-    console.log(email)
 
       //ocultamos el contenido de los otros divs
     document.querySelector('#emails-view').style.display = 'none';
@@ -112,16 +111,63 @@ function email_individual(email_id){
     //ponemos los datos del email dentro del div email-individual
     const emailDivIndividual = document.createElement('div');
     emailDivIndividual.classList.add('mailIndividual');
+    //averiguamos si hay que archivar o desarchivar el email
+    let valor_boton = 'Archivar';
+    if(email.archived == false){
+      valor_boton = 'Archivar';
+    } else{
+      valor_boton = 'Desarchivar';
+    }
+
     emailDivIndividual.innerHTML = `
       <p> Sender : ${email.sender} </p>
       <p> Recipents : ${email.recipients}</p>
       <p> Subject: ${email.subject}</p>
       <p> Timestamp: ${email.timestamp}</p>
       <p> Body : ${email.body} </p>
-      <p> read : ${email.read} </p>
+      <p> archived : ${email.archived} </p>
+      <input type="submit" id="boton" value="${valor_boton} ">
       `
+
+    const boton = emailDivIndividual.querySelector('#boton');
+    if(valor_boton == 'Archivar' ){
+      boton.addEventListener("click", function() {
+        archivar_email(`${email.id}`);
+    });
+    } else{
+      boton.addEventListener("click", function() {
+        desarchivar_email(`${email.id}`);
+    });
+    }
+    
+
     emailIndividual.innerHTML = '';
     emailIndividual.appendChild( emailDivIndividual);
   });
-
 }
+
+function archivar_email(email_id){
+  //obtenemos la lista de los mails de la bandeja de entrada unicamente
+
+    
+      fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: true
+        })
+      })
+      load_mailbox('inbox');
+  }
+
+  function desarchivar_email(email_id){
+    //obtenemos la lista de los mails archivados unicamente
+
+  
+      fetch(`/emails/${email_id}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+            archived: false
+        })
+      })
+      load_mailbox('inbox');
+    }
